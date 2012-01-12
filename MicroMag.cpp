@@ -16,7 +16,8 @@ MicroMag::MicroMag(const MicroMag& mm) \
 int8_t MicroMag::begin(void) const
 {
   pinMode(_ssPin, OUTPUT);
-  pinMode(_drdyPin, INPUT);
+  if (_drdyPin != 0xff)
+    pinMode(_drdyPin, INPUT);
   pinMode(_resetPin, OUTPUT);
   digitalWrite(_ssPin, HIGH);
   digitalWrite(_resetPin, LOW);
@@ -31,8 +32,7 @@ int8_t MicroMag::begin(void) const
 }
 
 
-int8_t MicroMag::read(char axis, uint8_t period, int16_t& result,
-		      uint16_t timeout_us) const
+int8_t MicroMag::convert(char axis, uint8_t period) const
 {
   uint8_t ax = tolower(axis) - 'x' + 1;
   if (ax > _axes)
@@ -54,10 +54,34 @@ int8_t MicroMag::read(char axis, uint8_t period, int16_t& result,
   digitalWrite(_resetPin, LOW);
 
   SPI.transfer(cmd); // Send the command byte
+  return errorNoError;
+}
 
+
+int16_t MicroMag::getResult(void) const
+{
+  // Read 2 bytes
+  int16_t result = SPI.transfer(0);
+  result <<= 8;
+  result |= SPI.transfer(0);
+
+  // De-select the device
+  digitalWrite(_ssPin, HIGH);
+
+  return result;
+}
+
+int8_t MicroMag::read(char axis, uint8_t period, int16_t& result,
+		      uint16_t timeout_us) const
+{
+  uint8_t ax = tolower(axis) - 'x' + 1;
+  int8_t ret = convert(axis, period);
+  if (ret != errorNoError)
+    return ret;
+  
   // Wait for ready signal
   if (timeout_us == 0)
-    // Set a default timeout which is approriate to the selected
+    // Set a default timeout which is approriate for the selected
     // period. See data sheet for details. Values used are 1us larger
     // to account for +/-1 jitter.
     switch (period) {
@@ -88,21 +112,20 @@ int8_t MicroMag::read(char axis, uint8_t period, int16_t& result,
     default:
       return errorBadPeriod;
     }
-  
-  unsigned long t = micros();
-  while (!digitalRead(_drdyPin)) {
-    if (micros() - t > timeout_us)
-      return errorTimeout;
+
+  if (_drdyPin == 0xff)
+    // Cannot monitor if device is ready just so wait
+    delayMicroseconds(timeout_us);
+  else {
+    // Wait until device reports it is ready, or timeout is reached
+    unsigned long t = micros();
+    while (!digitalRead(_drdyPin)) {
+      if (micros() - t > timeout_us)
+	return errorTimeout;
+    }
   }
-  
-  // Read 2 bytes
-  result = SPI.transfer(0);
-  result <<= 8;
-  result |= SPI.transfer(0);
 
-  // De-select the device
-  digitalWrite(_ssPin, HIGH);
-
+  result = getResult();
   return errorNoError;
 }
 

@@ -40,6 +40,8 @@ public:
   MicroMag(const MicroMag& mm);
   
   int8_t begin(void) const;
+  int8_t convert(char axis, uint8_t period) const;
+  int16_t getResult(void) const;
   int8_t read(char axis, uint8_t period, int16_t& result,
 	      uint16_t timeout_us = 0) const;
   int8_t readHighPrec(char axis, int32_t& result,
@@ -48,12 +50,12 @@ public:
 private:
   uint8_t _axes; // 2 = MicroMag2, 3 = MicroMag3
   uint8_t _ssPin;
-  uint8_t _drdyPin;
+  uint8_t _drdyPin; // Use 0xff to indicate DRDY not wired up
   uint8_t _resetPin;
   
   MicroMag(uint8_t ssPin, uint8_t drdyPin, uint8_t resetPin, uint8_t axes);
 
-  MicroMag(void); // declare but do not define
+  MicroMag(void); // Declare but do not define
   
 };
 

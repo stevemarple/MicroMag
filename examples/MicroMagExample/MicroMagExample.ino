@@ -1,11 +1,21 @@
 #include <SPI.h>
 #include <MicroMag.h>
 
-#if defined(__AVR_ATmega2560__)
-const int8_t drdyPin = 47;
-const int8_t resetPin = 45;
+// Adjust these pin definitions to suit your hardware. They are chosen
+// to match the RN-XV and SD shield with the MicroMag3 module option.
+#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+// Arduino Mega/Mega2560
+const int8_t drdyPin = A8
+const int8_t resetPin = A3;
+
+#elif defined(__AVR_ATmega1284P__)
+// Calunium
+const int8_t drdyPin = 14;
+const int8_t resetPin = A3;
+
 #else
-const int8_t drdyPin = 9;
+// Standard Arduino
+const int8_t drdyPin = 0xff;
 const int8_t resetPin = 8;
 #endif
 
