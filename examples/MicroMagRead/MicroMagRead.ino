@@ -1,3 +1,9 @@
+/*
+ * MicroMagRead.ino
+ * Author: Steve Marple
+ * License: GNU Lesser General Public License, version 2.1
+ */
+
 #include <SPI.h>
 #include <MicroMag.h>
 
@@ -39,22 +45,21 @@ void setup()
 
 void loop()
 {
-  int16_t d[model];
+  int16_t data[model];
   double total = 0.0; // total field value
-  for (uint8_t i = 0; i < model; ++i) {
-    char axis = 'x' + i;
+  for (uint8_t axis = 0; axis < model; ++axis) {
     int8_t r;
-    if ((r = MM.read(axis, MM_PERIOD_4096, d[i])) == 0) {
-      if (i)
+    if ((r = MM.read(axis, MM_PERIOD_4096, data[axis])) == 0) {
+      if (axis)
 	Serial.print("   ");
-      Serial.print(axis);
+      Serial.print(char('X' + axis));
       Serial.print(" = ");
-      Serial.print(d[i]);
-      total += sqrt(double(d[i]) * d[i]);
+      Serial.print(data[axis]);
+      total += sqrt(double(data[axis]) * data[axis]);
     }
     else {
       Serial.print("Cannot read from ");
-      Serial.print(axis);
+      Serial.print(char('X' + axis));
       Serial.print("axis: ");
       Serial.print(r, DEC);
     }

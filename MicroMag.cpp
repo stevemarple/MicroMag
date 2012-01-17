@@ -13,7 +13,7 @@ MicroMag::MicroMag(const MicroMag& mm) \
   ;
 }
 
-int8_t MicroMag::begin(void) const
+uint8_t MicroMag::begin(void) const
 {
   pinMode(_ssPin, OUTPUT);
   if (_drdyPin != 0xff)
@@ -28,21 +28,20 @@ int8_t MicroMag::begin(void) const
 
   // Make one reading to switch device into low power mode
   int16_t tmp;
-  return read('x', MM_PERIOD_32, tmp);
+  return read(0, MM_PERIOD_32, tmp);
 }
 
 
-int8_t MicroMag::convert(char axis, uint8_t period) const
+uint8_t MicroMag::convert(uint8_t axis, uint8_t period) const
 {
-  uint8_t ax = tolower(axis) - 'x' + 1;
-  if (ax > _axes)
+  if (axis > _axes)
     return errorBadAxis;
   
   if (period > MM_PERIOD_4096)
     return errorBadPeriod;
   
   uint8_t cmd = 0;
-  cmd |= ax;
+  cmd |= (axis + 1);
   cmd |= (period << 4);
   
   // Select the device
@@ -71,10 +70,9 @@ int16_t MicroMag::getResult(void) const
   return result;
 }
 
-int8_t MicroMag::read(char axis, uint8_t period, int16_t& result,
+uint8_t MicroMag::read(uint8_t axis, uint8_t period, int16_t& result,
 		      uint16_t timeout_us) const
 {
-  uint8_t ax = tolower(axis) - 'x' + 1;
   int8_t ret = convert(axis, period);
   if (ret != errorNoError)
     return ret;
@@ -129,7 +127,7 @@ int8_t MicroMag::read(char axis, uint8_t period, int16_t& result,
   return errorNoError;
 }
 
-int8_t MicroMag::readHighPrec(char axis, int32_t& result,
+uint8_t MicroMag::readHighPrec(uint8_t axis, int32_t& result,
 			      uint16_t timeout_us) const
 {
   int8_t r;
