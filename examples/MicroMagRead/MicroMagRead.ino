@@ -8,7 +8,8 @@
 const int8_t drdyPin = A8
 const int8_t resetPin = A3;
 
-#elif defined(__AVR_ATmega1284P__)
+#elif defined(__AVR_ATmega164P__) || defined(__AVR_ATmega324P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
+
 // Calunium
 const int8_t drdyPin = 14;
 const int8_t resetPin = A3;
