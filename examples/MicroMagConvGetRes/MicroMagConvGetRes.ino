@@ -21,7 +21,8 @@
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
 // Arduino Mega/Mega2560
 #define DRDY_PIN A8
-const int8_t resetPin = A3;
+const uint8_t mmResetPin = A3;
+const uint8_t mmSsPin = A0; // This is the chip select pin on the MM3
 
 #elif defined(__AVR_ATmega164P__) || defined(__AVR_ATmega324P__) \
   || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644P__) \
@@ -29,12 +30,15 @@ const int8_t resetPin = A3;
 
 // Calunium
 #define DRDY_PIN 14
-const int8_t resetPin = A3;
+const uint8_t mmResetPin = A3;
+const uint8_t mmSsPin = A0; // This is the chip select pin on the MM3
 
 #else
 // Standard Arduino, DRDY does not connect by default to the Arduino
 #define DRDY_PIN 0xff
-const int8_t resetPin = 8;
+const uint8_t mmResetPin = 8;
+const uint8_t mmSsPin = A0; // This is the chip select pin on the MM3
+
 #endif
 
 #if DRDY_PIN == 0xff
@@ -42,7 +46,7 @@ const int8_t resetPin = 8;
   default pin on the shield does not connect to the Arduino 
 #endif
 
-const int8_t drdyPin = DRDY_PIN;
+const uint8_t mmDrdyPin = DRDY_PIN;
 
 // Change this to suit your version.
 const uint8_t model = 3;
@@ -51,7 +55,7 @@ const uint8_t model = 3;
 uint8_t period = MM_PERIOD_4096;
 
 // Create a MicroMag object
-MicroMag MM = MicroMag::MicroMag3(SS, drdyPin, resetPin);
+MicroMag MM = MicroMag::MicroMag3(mmSsPin, mmDrdyPin, mmResetPin);
 
 // Use an 8-bit variable to obtain atomic read/write access. Disabling
 // interrupts is therefore not needed.

@@ -11,26 +11,29 @@
 // to match the RN-XV and SD shield with the MicroMag3 module option.
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
 // Arduino Mega/Mega2560
-const int8_t drdyPin = A8
-const int8_t resetPin = A3;
+const uint8_t mmSsPin = A0; // This is the chip select pin on the MM3
+const uint8_t mmDrdyPin = A8
+const uint8_t mmResetPin = A3;
 
 #elif defined(__AVR_ATmega164P__) || defined(__AVR_ATmega324P__) || defined(__AVR_ATmega644__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)
 
 // Calunium
-const int8_t drdyPin = 14;
-const int8_t resetPin = A3;
+const uint8_t mmSsPin = A0; // This is the chip select pin on the MM3
+const uint8_t mmDrdyPin = 14;
+const uint8_t mmResetPin = A3;
 
 #else
 // Standard Arduino
-const int8_t drdyPin = 0xff;
-const int8_t resetPin = 8;
+const uint8_t mmSsPin = A0; // This is the chip select pin on the MM3
+const uint8_t mmDrdyPin = 0xff;
+const uint8_t mmResetPin = 8;
 #endif
 
 // Change this to suit your version.
 const uint8_t model = 3;
 
 // Create a MicroMag object
-MicroMag MM = MicroMag::MicroMag3(SS, drdyPin, resetPin);
+MicroMag MM = MicroMag::MicroMag3(mmSsPin, mmDrdyPin, mmResetPin);
 
 
 void setup()
