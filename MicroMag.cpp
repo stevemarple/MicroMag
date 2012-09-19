@@ -47,18 +47,26 @@ uint8_t MicroMag::convert(uint8_t axis, uint8_t period) const
   // Select the device
   digitalWrite(_ssPin, LOW);
 
-  // Reset
+  // Reset the device
   digitalWrite(_resetPin, HIGH);
   delayMicroseconds(1);
   digitalWrite(_resetPin, LOW);
 
-  SPI.transfer(cmd); // Send the command byte
+  // Send the command byte
+  SPI.transfer(cmd); 
+
+  // De-select the device
+  digitalWrite(_ssPin, HIGH);
+
   return errorNoError;
 }
 
 
 int16_t MicroMag::getResult(void) const
 {
+  // Select the device
+  digitalWrite(_ssPin, LOW);
+
   // Read 2 bytes
   int16_t result = SPI.transfer(0);
   result <<= 8;
